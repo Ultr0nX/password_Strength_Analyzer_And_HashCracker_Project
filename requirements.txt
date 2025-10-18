@@ -1,4 +1,6 @@
 flask
+gunicorn
+bcrypt
+requests
 aiohttp
 beautifulsoup4
-gunicorn
