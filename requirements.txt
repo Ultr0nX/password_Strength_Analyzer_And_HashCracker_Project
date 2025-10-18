@@ -4,3 +4,4 @@ bcrypt
 requests
 aiohttp
 beautifulsoup4
+argon2
