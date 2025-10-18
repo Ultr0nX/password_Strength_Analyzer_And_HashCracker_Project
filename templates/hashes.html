@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hash Cracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --background-color: #f8f9fa;
+            --text-color: #333;
+            --light-gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+            --info-color: #17a2b8;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .nav {
+            display: flex;
+        }
+        
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .nav a.active {
+            background-color: rgba(255,255,255,0.2);
+        }
+        
+        .main-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            flex: 1;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        p {
+            margin-bottom: 1.5rem;
+            color: var(--dark-gray);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-gray);
+        }
+        
+        input[type="text"], select {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 8px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background-color: var(--background-color);
+        }
+        
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.2);
+        }
+        
+        .input-feedback {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            display: none;
+        }
+        
+        .valid-feedback {
+            color: var(--success-color);
+        }
+        
+        .invalid-feedback {
+            color: var(--danger-color);
+        }
+        
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: var(--light-gray);
+            color: var(--dark-gray);
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .success { 
+            background-color: #e8f5e9; 
+            border-left: 4px solid var(--success-color);
+        }
+        
+        .failure { 
+            background-color: #ffebee; 
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .result h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .result-label {
+            font-weight: 500;
+        }
+        
+        .result-value {
+            font-weight: 400;
+        }
+        
+        .error {
+            background-color: #ffebee;
+            color: var(--danger-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--danger-color);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: white;
+            color: var(--dark-gray);
+            margin-top: auto;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .hash-info {
+            background-color: #e3f2fd;
+            border-left: 4px solid var(--info-color);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hash-info h3 {
+            color: var(--info-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .hash-info p {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">Password Security Suite</div>
+            <nav class="nav">
+                <a href="/">Password Analyzer</a>
+                <a href="/hash_cracker" class="active">Hash Cracker</a>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <div class="card">
+            <h1>Hash Cracker</h1>
+            <p>Enter a hash to attempt to crack it using our dictionary-based approach with common mutations.</p>
+            
+            <div class="hash-info">
+                <h3>Hash Format Information</h3>
+                <p><strong>MD5:</strong> 32 hexadecimal characters (0-9, a-f)</p>
+                <p><strong>SHA-256:</strong> 64 hexadecimal characters (0-9, a-f)</p>
+                <p><strong>bcrypt:</strong> Starts with "$2" followed by version identifier</p>
+                <p><strong>Argon2:</strong> Starts with "$argon2" followed by parameters</p>
+            </div>
+            
+            <form id="crackForm" action="/crack" method="POST">
+                <div class="form-group">
+                    <label for="hash">Hash Value:</label>
+                    <input type="text" id="hash" name="hash" placeholder="Enter hash to crack" value="{{ hash if hash else '' }}">
+                    <div id="hashFeedback" class="input-feedback"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="algorithm">Hash Algorithm:</label>
+                    <select id="algorithm" name="algorithm">
+                        <option value="md5" {% if algorithm == 'md5' %}selected{% endif %}>MD5</option>
+                        <option value="sha256" {% if algorithm == 'sha256' %}selected{% endif %}>SHA-256</option>
+                        <option value="bcrypt" {% if algorithm == 'bcrypt' %}selected{% endif %}>bcrypt</option>
+                        <option value="argon2" {% if algorithm == 'argon2' %}selected{% endif %}>Argon2</option>
+                    </select>
+                </div>
+                
+                <button type="submit" id="submitBtn">Crack Hash</button>
+            </form>
+            
+            {% if error %}
+            <div class="error">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+            
+            {% if success is defined %}
+                {% if success %}
+                <div class="result success">
+                    <h2>Hash Cracked Successfully!</h2>
+                    <div class="result-item">
+                        <span class="result-label">Password:</span>
+                        <span class="result-value"><strong>{{ password }}</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Attempts:</span>
+                        <span class="result-value">{{ attempts }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Algorithm:</span>
+                        <span class="result-value">{{ algorithm }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Hash:</span>
+                        <span class="result-value">{{ hash }}</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="result failure">
+                    <h2>Hash Could Not Be Cracked</h2>
+                    <div class="result-item">
+                        <span class="result-label">Status:</span>
+                        <span class="result-value">The password was not found in the wordlist after {{ attempts }} attempts.</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Algorithm:</span>
+                        <span class="result-value">{{ algorithm }}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Hash:</span>
+                        <span class="result-value">{{ hash }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>Password Security Suite &copy; 2023 - Secure your digital life</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hashInput = document.getElementById('hash');
+            const algorithmSelect = document.getElementById('algorithm');
+            const hashFeedback = document.getElementById('hashFeedback');
+            const submitBtn = document.getElementById('submitBtn');
+            const form = document.getElementById('crackForm');
+            
+            // Validate hash format based on selected algorithm
+            function validateHash() {
+                const hash = hashInput.value.trim();
+                const algorithm = algorithmSelect.value;
+                
+                if (!hash) {
+                    hashFeedback.textContent = 'Please enter a hash value';
+                    hashFeedback.className = 'input-feedback invalid-feedback';
+                    hashFeedback.style.display = 'block';
+                    return false;
+                }
+                
+                let isValid = true;
+                let message = '';
+                
+                if (algorithm === 'md5') {
+                    const md5Regex = /^[a-fA-F0-9]{32}$/;
+                    isValid = md5Regex.test(hash);
+                    message = isValid ? 'Valid MD5 hash format' : 'Invalid MD5 hash format. Must be 32 hexadecimal characters.';
+                } else if (algorithm === 'sha256') {
+                    const sha256Regex = /^[a-fA-F0-9]{64}$/;
+                    isValid = sha256Regex.test(hash);
+                    message = isValid ? 'Valid SHA-256 hash format' : 'Invalid SHA-256 hash format. Must be 64 hexadecimal characters.';
+                } else if (algorithm === 'bcrypt') {
+                    isValid = hash.startsWith('$2');
+                    message = isValid ? 'Valid bcrypt hash format' : 'Invalid bcrypt hash format. Must start with $2.';
+                } else if (algorithm === 'argon2') {
+                    isValid = hash.startsWith('$argon2');
+                    message = isValid ? 'Valid Argon2 hash format' : 'Invalid Argon2 hash format. Must start with $argon2.';
+                }
+                
+                hashFeedback.textContent = message;
+                hashFeedback.className = 'input-feedback ' + (isValid ? 'valid-feedback' : 'invalid-feedback');
+                hashFeedback.style.display = 'block';
+                
+                return isValid;
+            }
+            
+            // Validate on input change
+            hashInput.addEventListener('input', validateHash);
+            algorithmSelect.addEventListener('change', validateHash);
+            
+            // Form submission validation
+            form.addEventListener('submit', function(event) {
+                if (!validateHash()) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
